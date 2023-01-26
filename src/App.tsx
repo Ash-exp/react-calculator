@@ -8,22 +8,29 @@ function App() {
 
   const updateNumber = (value: string) => {
     if (
-      (ops.includes(value) && number === '') ||
-      (ops.includes(value) && ops.includes(number.slice(-1)))
+      (ops.includes(value) && number === '' && value !== '-') ||
+      (ops.includes(value) && value !== '.' && ops.includes(number.slice(-1)))
     ) {
       return;
     }
     if (number === '0' && !ops.includes(value)) setNumber(value);
-    else if (number.slice(-1) === '0' && ops.includes(number.slice(-2, -1)))
-      setNumber(number.slice(0, -1) + value);
-    else setNumber(number + value);
-
+    else if (number.slice(-1) === '0' && ops.includes(number.slice(-2, -1))) {
+      if (value === '0') setNumber(number + value);
+      else setNumber(number.slice(0, -1) + value);
+    } else {
+      if (value === '%') setNumber(number + '/100');
+      else setNumber(number + value);
+    }
     if (!ops.includes(value)) {
       if (number === '0') setResult(eval(value).toString());
       else if (number.slice(-1) === '0' && ops.includes(number.slice(-2, -1)))
-        setResult(eval(number.slice(0, -1) + value).toString());
-      else setResult(eval(number + value).toString());
+        if (value === '0') setResult(eval(number + value).toString());
+        else setResult(eval(number.slice(0, -1) + value).toString());
+      else {
+        setResult(eval(number + value).toString());
+      }
     }
+    if (value === '%') setResult(eval(number + '/100').toString());
   };
 
   const calculate = () => {
@@ -36,6 +43,7 @@ function App() {
     }
     const value = number.slice(0, -1);
     setNumber(value);
+    if (!ops.includes(number.slice(-2, -1))) setResult(eval(value));
   };
 
   const setAC = () => {
