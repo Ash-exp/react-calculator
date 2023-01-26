@@ -1,24 +1,135 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
 
 function App() {
+  const [number, setNumber] = useState<string>('');
+  const [result, setResult] = useState<string>('');
+  const ops = ['/', '*', '+', '-', '.', '%'];
+
+  const updateNumber = (value: string) => {
+    if (
+      (ops.includes(value) && number === '') ||
+      (ops.includes(value) && ops.includes(number.slice(-1)))
+    ) {
+      return;
+    }
+    if (number === '0' && !ops.includes(value)) setNumber(value);
+    else if (number.slice(-1) === '0' && ops.includes(number.slice(-2, -1)))
+      setNumber(number.slice(0, -1) + value);
+    else setNumber(number + value);
+
+    if (!ops.includes(value)) {
+      if (number === '0') setResult(eval(value).toString());
+      else if (number.slice(-1) === '0' && ops.includes(number.slice(-2, -1)))
+        setResult(eval(number.slice(0, -1) + value).toString());
+      else setResult(eval(number + value).toString());
+    }
+  };
+
+  const calculate = () => {
+    setNumber(eval(number).toString());
+  };
+
+  const deleteLast = () => {
+    if (number === '') {
+      return;
+    }
+    const value = number.slice(0, -1);
+    setNumber(value);
+  };
+
+  const setAC = () => {
+    const value = '';
+    setNumber(value);
+    setResult(value);
+  };
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="bg-gray-200 w-screen h-screen flex justify-center items-center">
+      <div className="w-64 h-auto bg-white rounded-2xl shadow-xl border-4 border-gray-100">
+        <div className="w-auto m-3 h-28 text-right space-y-2 py-2">
+          <div className="text-gray-700">{number ? number : '0'}</div>
+          <div className="text-black font-bold text-3xl">
+            {result ? result : '0'}=
+          </div>
+        </div>
+        <div className="w-auto m-1 h-auto mb-2">
+          <div className="m-2 flex justify-between">
+            <button onClick={setAC} className="btn-yellow">
+              AC
+            </button>
+            <button onClick={deleteLast} className="btn-grey">
+              C
+            </button>
+            <button onClick={() => updateNumber('%')} className="btn-grey">
+              %
+            </button>
+            <button onClick={() => updateNumber('/')} className="btn-orange">
+              /
+            </button>
+          </div>
+          <div className="m-2 flex justify-between">
+            <button onClick={() => updateNumber('7')} className="btn-grey">
+              7
+            </button>
+            <button onClick={() => updateNumber('8')} className="btn-grey">
+              8
+            </button>
+            <button onClick={() => updateNumber('9')} className="btn-grey">
+              9
+            </button>
+            <button onClick={() => updateNumber('*')} className="btn-orange">
+              *
+            </button>
+          </div>
+          <div className="m-2 flex justify-between">
+            <button onClick={() => updateNumber('4')} className="btn-grey">
+              4
+            </button>
+            <button onClick={() => updateNumber('5')} className="btn-grey">
+              5
+            </button>
+            <button onClick={() => updateNumber('6')} className="btn-grey">
+              6
+            </button>
+            <button onClick={() => updateNumber('-')} className="btn-orange">
+              -
+            </button>
+          </div>
+          <div className="m-2 flex justify-between">
+            <button onClick={() => updateNumber('1')} className="btn-grey">
+              1
+            </button>
+            <button onClick={() => updateNumber('2')} className="btn-grey">
+              2
+            </button>
+            <button onClick={() => updateNumber('3')} className="btn-grey">
+              3
+            </button>
+            <button onClick={() => updateNumber('+')} className="btn-orange">
+              +
+            </button>
+          </div>
+          <div className="m-2 flex justify-between">
+            <button
+              onClick={() => updateNumber('0')}
+              className="btn-grey-jumbo"
+            >
+              0
+            </button>
+            <div className="flex w-full ml-3 justify-between">
+              <button onClick={() => updateNumber('.')} className="btn-grey">
+                .
+              </button>
+              <button onClick={calculate} className="btn-green">
+                =
+              </button>
+            </div>
+          </div>
+          <div className="flex justify-center mt-5">
+            <div className="w-20 h-1 bg-gray-100 rounded-l-xl rounded-r-xl"></div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
